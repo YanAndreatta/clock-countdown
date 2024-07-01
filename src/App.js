@@ -20,7 +20,6 @@ const App = () => {
     {/* content */}
     <div className="page__content">
       <h1>Portfolio em produção 😉</h1>
-      <h3></h3>
       {/* clock */}
       <FlipClockCountdown 
         to={new Date().getTime() + 24 * 3600 * 1000 + 5000}
