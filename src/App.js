@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import FlipClockCountdown from "@leenguyen/react-flip-clock-countdown";
-import { useUnmount } from 'react-use';
 import '@leenguyen/react-flip-clock-countdown/dist/index.css';
 import VideoBg from "../src/assets/video.mp4";
 import './styles.css';
 
 const App = () => {
-  const savedTime = localStorage.getItem('endTime');
-  const initialEndTime = savedTime ? parseInt(savedTime, 10) : new Date().getTime() + 6 * 3600 * 1000;
-  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
-
-  useUnmount(() => {
-    localStorage.setItem('endTime', initialEndTime);
+  const [endTime] = useState(() => {
+    const savedTime = localStorage.getItem('endTime');
+    if (savedTime) {
+      return parseInt(savedTime, 10);
+    } else {
+      const newEndTime = new Date().getTime() + 6 * 3600 * 1000; 
+      localStorage.setItem('endTime', newEndTime);
+      return newEndTime;
+    }
   });
+
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
       const currentTime = new Date().getTime();
-      const timeLeft = initialEndTime - currentTime;
+      const timeLeft = endTime - currentTime;
       if (timeLeft <= 0) {
         setIsButtonEnabled(true);
         localStorage.removeItem('endTime');
@@ -26,7 +30,7 @@ const App = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [initialEndTime]);
+  }, [endTime]);
 
   return (
     <section className='page'>
@@ -39,7 +43,7 @@ const App = () => {
         <h1>Portfolio em produção 😉</h1>
         {/* clock */}
         <FlipClockCountdown 
-          to={initialEndTime}
+          to={endTime}
           className='flip-clock'
           labels={['DAYS', 'HOURS', 'MINUTES', 'SECONDS']}
           duration={0.5} 
